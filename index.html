@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>영단어 암기 MVP</title>
+  <style>
+    :root { --gap: 12px; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:#0b0c0f; color:#e5e7eb; }
+    header { padding: 16px 20px; border-bottom: 1px solid #1f2937; position: sticky; top: 0; background: #0b0c0f; z-index: 10; }
+    main { padding: 20px; max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 420px 1fr; gap: var(--gap); }
+    h1 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: .2px; }
+    .card { border: 1px solid #1f2937; background: #0f1115; border-radius: 14px; padding: 14px; }
+    .row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+    .field { display: grid; gap: 6px; margin-bottom: 10px; }
+    label { font-size: 12px; color: #9ca3af; }
+    input, textarea, select { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #273244; background:#0b0e12; color:#e5e7eb; outline: none; }
+    input:focus, textarea:focus { border-color:#3b82f6; }
+    button { padding: 10px 12px; border-radius: 10px; border: 1px solid #273244; background:#10131a; color:#e5e7eb; cursor: pointer; }
+    button:hover { background:#0d1117; }
+    button.primary { background:#1f2a44; border-color:#314064; }
+    button.primary:hover { background:#223054; }
+    .muted { color:#9ca3af; font-size: 12px; }
+    .list { display: grid; gap: 8px; max-height: 360px; overflow:auto; padding-right:6px; }
+    .item { display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center; border:1px solid #1f2937; border-radius:12px; padding:10px 12px; background:#0b0e12; }
+    .tag { font-size: 11px; color:#9ca3af; }
+    .actions { display:flex; gap:8px; }
+    .split { display:grid; grid-template-columns: repeat(2, 1fr); gap:8px; }
+
+    /* Quiz */
+    .quiz { display:grid; gap:10px; }
+    .panel { border: 1px dashed #273244; border-radius: 12px; padding: 16px; min-height: 120px; display:grid; align-content:center; justify-items:center; text-align:center; }
+    .word { font-size: 28px; font-weight: 700; letter-spacing: .2px; }
+    .meaning { font-size: 18px; color:#c7d2fe; }
+    .result { font-size: 14px; }
+    .grid2 { display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center; }
+    .naver a { color:#93c5fd; text-decoration: underline; font-size: 13px; }
+
+    /* Small screens */
+    @media (max-width: 880px) {
+      main { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>영단어 암기 MVP (LocalStorage)</h1>
+  </header>
+
+  <main>
+    <!-- 왼쪽: 입력/목록 -->
+    <section class="card">
+      <h2 style="margin:2px 0 12px 2px; font-size:15px;">단어 추가</h2>
+      <div class="field">
+        <label for="w">영어 단어</label>
+        <input id="w" placeholder="예: imperative" />
+      </div>
+      <div class="field">
+        <label for="m">뜻 (쉼표로 구분)</label>
+        <input id="m" placeholder="필수의, 명령의" />
+      </div>
+      <div class="row">
+        <div class="actions">
+          <button id="add" class="primary">단어 추가</button>
+          <button id="clearInput">입력 지움</button>
+        </div>
+        <small id="msg" class="muted"></small>
+      </div>
+
+      <hr style="border:none; border-top:1px solid #1f2937; margin:14px 0;" />
+
+      <div class="split">
+        <div class="field">
+          <label>JSON/CSV 가져오기</label>
+          <input id="file" type="file" accept=".json,.csv" />
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <button id="importBtn">불러오기</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="actions">
+          <button id="exportJson">JSON 내보내기</button>
+          <button id="exportCsv">CSV 내보내기</button>
+          <button id="resetAll" title="모든 단어 삭제">전체 초기화</button>
+        </div>
+        <div class="muted">브라우저에 로컬 저장됩니다.</div>
+      </div>
+
+      <hr style="border:none; border-top:1px solid #1f2937; margin:14px 0;" />
+
+      <h2 style="margin:2px 0 8px 2px; font-size:15px;">내 단어 (<span id="count">0</span>)</h2>
+      <div id="list" class="list"></div>
+    </section>
+
+    <!-- 오른쪽: 학습 -->
+    <section class="card">
+      <div class="grid2">
+        <h2 style="margin:2px 0 8px 2px; font-size:15px;">학습</h2>
+        <div class="muted" id="stats">오늘 0개 · 정답률 0%</div>
+      </div>
+
+      <div class="quiz">
+        <div class="panel" id="panel">
+          <div class="word" id="q">단어를 불러오세요</div>
+          <div class="meaning" id="a" style="display:none"></div>
+        </div>
+
+        <div class="grid2">
+          <input id="ans" placeholder="한글 뜻 입력" />
+          <div class="actions">
+            <button id="submit" class="primary">제출</button>
+            <button id="next">다음</button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="actions">
+            <button id="know">암기완료(삭제)</button>
+            <button id="show">보기/숨기기</button>
+            <button id="load">단어 랜덤 불러오기</button>
+          </div>
+          <div class="naver" id="naver"></div>
+        </div>
+        <div id="result" class="result muted"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ====== 데이터 저장/로드 ======
+    const LS_KEY = 'vocab_list'; // [{word, meaning:[]}] 구조
+    const STATS_KEY = () => 'stats_' + new Date().toISOString().slice(0,10); // 일자별
+
+    const loadVocab = () => {
+      try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; }
+      catch { return []; }
+    };
+    const saveVocab = (list) => { localStorage.setItem(LS_KEY, JSON.stringify(list)); };
+
+    // ====== 상태 ======
+    let vocab = loadVocab();
+    let current = null; // {word, meaning:[]}
+
+    // ====== DOM ======
+    const el = (id) => document.getElementById(id);
+    const w = el('w'), m = el('m'), msg = el('msg');
+    const listEl = el('list'), countEl = el('count');
+    const q = el('q'), a = el('a'), ans = el('ans');
+    const result = el('result'), stats = el('stats'), naver = el('naver');
+
+    // ====== 유틸 ======
+    const normalizeWord = (s) => (s||'').trim();
+    const parseMeanings = (s) => (s||'').split(',').map(x=>x.trim()).filter(Boolean);
+    const sameWord = (x,y) => normalizeWord(x).toLowerCase() === normalizeWord(y).toLowerCase();
+
+    const updateList = () => {
+      countEl.textContent = String(vocab.length);
+      listEl.innerHTML = '';
+      if (vocab.length === 0) {
+        listEl.innerHTML = '<div class="muted">단어가 없습니다. 왼쪽에서 추가하세요.</div>';
+        return;
+      }
+      for (const item of vocab) {
+        const row = document.createElement('div');
+        row.className = 'item';
+        const left = document.createElement('div');
+        left.innerHTML = `<div style="font-weight:600">${escapeHtml(item.word)}</div>` +
+                         `<div class="tag">${escapeHtml(item.meaning.join(', '))}</div>`;
+        const right = document.createElement('div');
+        right.className = 'actions';
+        const del = document.createElement('button');
+        del.textContent = '삭제';
+        del.onclick = () => { vocab = vocab.filter(x => !sameWord(x.word, item.word)); saveVocab(vocab); updateList(); };
+        right.appendChild(del);
+        row.appendChild(left); row.appendChild(right);
+        listEl.appendChild(row);
+      }
+    };
+
+    const escapeHtml = (s) => s.replace(/[&<>"]+/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+    const pickRandom = () => {
+      if (vocab.length === 0) return null;
+      return vocab[Math.floor(Math.random()*vocab.length)];
+    };
+
+    const makeNaverLink = (word) => {
+      if (!word) { naver.innerHTML = ''; return; }
+      const q = encodeURIComponent(word);
+      const url = `https://en.dict.naver.com/#/search?query=${q}`;
+      naver.innerHTML = `<a href="${url}" target="_blank" rel="noopener">네이버사전에서 보기 ↗</a>`;
+    };
+
+    const loadStats = () => {
+      try { return JSON.parse(localStorage.getItem(STATS_KEY())) || { tried:0, correct:0 }; }
+      catch { return { tried:0, correct:0 }; }
+    };
+    const saveStats = (s) => { localStorage.setItem(STATS_KEY(), JSON.stringify(s)); };
+
+    const renderStats = () => {
+      const s = loadStats();
+      const rate = s.tried ? Math.round((s.correct/s.tried)*100) : 0;
+      stats.textContent = `오늘 ${s.tried}개 · 정답률 ${rate}%`;
+    };
+
+    // ====== 학습 흐름 ======
+    const setQuestion = (item) => {
+      current = item;
+      q.textContent = item ? item.word : '모든 단어를 외웠습니다!';
+      a.textContent = item ? item.meaning.join(', ') : '';
+      a.style.display = 'none';
+      result.textContent = '';
+      ans.value = '';
+      makeNaverLink(item?.word || '');
+      ans.focus();
+    };
+
+    const showAnswer = (show) => { a.style.display = show ? 'block' : 'none'; };
+
+    const check = () => {
+      if (!current) { result.textContent = '단어를 먼저 불러오세요.'; return; }
+      const user = ans.value.trim();
+      if (!user) { result.textContent = '답을 입력하세요.'; return; }
+      const ok = current.meaning.some(m => m && user.includes(m));
+      const s = loadStats();
+      s.tried += 1; if (ok) s.correct += 1; saveStats(s); renderStats();
+      result.textContent = ok ? '정답!' : `오답! 정답: ${current.meaning.join(', ')}`;
+      showAnswer(true);
+    };
+
+    const next = () => setQuestion(pickRandom());
+
+    const knowIt = () => {
+      if (!current) return;
+      vocab = vocab.filter(x => !sameWord(x.word, current.word));
+      saveVocab(vocab); updateList();
+      setQuestion(pickRandom());
+    };
+
+    // ====== 이벤트 ======
+    el('add').onclick = () => {
+      const word = normalizeWord(w.value);
+      const meanings = parseMeanings(m.value);
+      if (!word || meanings.length === 0) { msg.textContent = '단어와 뜻을 모두 입력하세요.'; return; }
+      if (vocab.some(x => sameWord(x.word, word))) { msg.textContent = `이미 존재: '${word}'`; w.value=''; m.value=''; return; }
+      vocab.push({ word, meaning: meanings });
+      saveVocab(vocab); updateList(); msg.textContent = `추가됨: ${word}`; w.value=''; m.value=''; w.focus();
+    };
+
+    el('clearInput').onclick = () => { w.value=''; m.value=''; w.focus(); msg.textContent=''; };
+
+    el('submit').onclick = check;
+    el('next').onclick = next;
+    el('show').onclick = () => showAnswer(a.style.display==='none');
+    el('load').onclick = () => setQuestion(pickRandom());
+    el('know').onclick = knowIt;
+
+    ans.addEventListener('keydown', (e)=>{
+      if (e.key === 'Enter') { e.preventDefault(); check(); }
+      if (e.key === 'Tab') { e.preventDefault(); knowIt(); }
+    });
+
+    // ====== 가져오기/내보내기 ======
+    el('exportJson').onclick = () => {
+      const blob = new Blob([JSON.stringify(vocab, null, 2)], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'vocab_list.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    };
+
+    el('exportCsv').onclick = () => {
+      const rows = [['word','meaning']].concat(vocab.map(v=>[v.word, v.meaning.join('|')]));
+      const csv = rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], {type:'text/csv'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'vocab_list.csv';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    };
+
+    const parseCSV = (text) => {
+      // 매우 단순한 CSV 파서: 첫 행은 헤더(word, meaning). meaning은 '|'로 여러 뜻.
+      const lines = text.split(/\r?\n/).filter(Boolean);
+      if (lines.length === 0) return [];
+      const out = [];
+      for (let i=1;i<lines.length;i++){
+        const cols = lines[i].split(',');
+        if (!cols.length) continue;
+        const word = cols[0].replace(/^\"|\"$/g,'').trim();
+        const meaningRaw = (cols[1]||'').replace(/^\"|\"$/g,'').trim();
+        const meaning = meaningRaw ? meaningRaw.split('|').map(x=>x.trim()).filter(Boolean) : [];
+        if (word && meaning.length) out.push({word, meaning});
+      }
+      return out;
+    };
+
+    el('importBtn').onclick = async () => {
+      const f = el('file').files[0];
+      if (!f) return;
+      const text = await f.text();
+      let items = [];
+      if (f.name.toLowerCase().endsWith('.json')) {
+        try { items = JSON.parse(text); } catch { alert('JSON 파싱 실패'); return; }
+      } else if (f.name.toLowerCase().endsWith('.csv')) {
+        items = parseCSV(text);
+      }
+      if (!Array.isArray(items)) { alert('형식 오류'); return; }
+      let added = 0;
+      for (const it of items) {
+        const word = normalizeWord(it.word);
+        const meaning = Array.isArray(it.meaning) ? it.meaning.map(x=>String(x).trim()).filter(Boolean) : [];
+        if (!word || !meaning.length) continue;
+        if (vocab.some(x => sameWord(x.word, word))) continue;
+        vocab.push({ word, meaning }); added++;
+      }
+      saveVocab(vocab); updateList(); alert(`${added}개 추가됨`);
+    };
+
+    el('resetAll').onclick = () => {
+      if (!confirm('모든 단어를 삭제할까요?')) return;
+      vocab = []; saveVocab(vocab); updateList(); setQuestion(null);
+    };
+
+    // ====== 초기 렌더 ======
+    updateList(); renderStats(); setQuestion(pickRandom());
+  </script>
+</body>
+</html>
