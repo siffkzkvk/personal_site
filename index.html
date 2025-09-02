@@ -328,6 +328,15 @@
 
     // ====== 초기 렌더 ======
     updateList(); renderStats(); setQuestion(pickRandom());
+
+    // 페이지 첫 로드 시, LocalStorage가 비어 있으면 원본 JSON을 fetch해서 채우기
+(async () => {
+  if (!localStorage.getItem('vocab_list')) {
+    const res = await fetch('vocab_list_dedup.json'); // 같은 저장소에 파일 추가
+    const data = await res.json();
+    localStorage.setItem('vocab_list', JSON.stringify(data));
+  }
+})();
   </script>
 </body>
 </html>
