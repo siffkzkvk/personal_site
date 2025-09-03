@@ -233,11 +233,19 @@
     const next = () => setQuestion(pickRandom());
 
     const knowIt = () => {
-      if (!current) return;
-      vocab = vocab.filter(x => !sameWord(x.word, current.word));
-      saveVocab(vocab); updateList();
-      setQuestion(pickRandom());
-    };
+if (!current) return;
+const deletedWord = current.word;
+vocab = vocab.filter(x => !sameWord(x.word, current.word));
+saveVocab(vocab);
+updateList();
+// 알림
+alert(`'${deletedWord}' 단어가 삭제되었습니다.`);
+// 원본 JSON도 최신 상태로 저장받고 싶을 때 자동 다운로드
+if (AUTO_DOWNLOAD_ON_DELETE) {
+exportJsonNow('vocab_list.json');
+}
+setQuestion(pickRandom());
+};
 
     // ====== 이벤트 ======
     el('add').onclick = () => {
