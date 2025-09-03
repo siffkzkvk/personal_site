@@ -129,6 +129,56 @@
   </main>
 
   <script>
+// ... (기존 AUTO_DOWNLOAD_ON_DELETE, exportJsonNow 위에/아래 상관없음)
+
+// 공통 삭제 함수
+const deleteWord = (word) => {
+  const normalized = (word || '').trim().toLowerCase();
+  vocab = vocab.filter(x => (x.word || '').trim().toLowerCase() !== normalized);
+  saveVocab(vocab);
+  updateList();
+  alert(`'${word}' 단어가 삭제되었습니다.`);
+  if (AUTO_DOWNLOAD_ON_DELETE) {
+    exportJsonNow('vocab_list.json');
+  }
+};
+// (추가) 삭제 시 최신 JSON 자동 다운로드할지 여부
+const AUTO_DOWNLOAD_ON_DELETE = true;
+
+// (추가) 현재 vocab을 즉시 JSON 파일로 다운로드하는 함수
+const exportJsonNow = (filename = 'vocab_list.json') => {
+  const blob = new Blob([JSON.stringify(vocab, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+// 공통: 소문자/공백 정규화
+const norm = (s) => (s || '').trim().toLowerCase();
+
+// 현재 목록에 동일 영어 단어가 있는지(영어 기준, 대소문자/공백 무시)
+const hasWord = (word) => vocab.some(x => norm(x.word) === norm(word));
+
+// 배열에서 영어 기준 중복 제거(첫 항목만 유지, 병합 안 함)
+const dedupeListKeepFirst = (items) => {
+  const seen = new Set();
+  const out = [];
+  for (const it of items) {
+    const key = norm(it.word);
+    if (!key) continue;
+    if (seen.has(key)) continue;       // 이미 본 단어면 스킵
+    seen.add(key);
+    // meaning은 배열로 강제
+    const meaning = Array.isArray(it.meaning) ? it.meaning : (it.meaning ? [String(it.meaning)] : []);
+    out.push({ word: it.word, meaning: meaning.map(s => String(s).trim()).filter(Boolean) });
+  }
+  return out;
+};
+</script>
+
+  <script>
     // ====== 데이터 저장/로드 ======
     const LS_KEY = 'vocab_list'; // [{word, meaning:[]}] 구조
     const STATS_KEY = () => 'stats_' + new Date().toISOString().slice(0,10); // 일자별
@@ -172,7 +222,7 @@
         right.className = 'actions';
         const del = document.createElement('button');
         del.textContent = '삭제';
-        del.onclick = () => { vocab = vocab.filter(x => !sameWord(x.word, item.word)); saveVocab(vocab); updateList(); };
+        del.onclick = () => { vocab = vocab.filter(x => !sameWord(x.word, item.word)); saveVocab(vocab); updateList(); deleteWord(item.word); };
         right.appendChild(del);
         row.appendChild(left); row.appendChild(right);
         listEl.appendChild(row);
@@ -232,30 +282,31 @@
 
     const next = () => setQuestion(pickRandom());
 
-    const knowIt = () => {
-if (!current) return;
-const deletedWord = current.word;
-vocab = vocab.filter(x => !sameWord(x.word, current.word));
-saveVocab(vocab);
-updateList();
-// 알림
-alert(`'${deletedWord}' 단어가 삭제되었습니다.`);
-// 원본 JSON도 최신 상태로 저장받고 싶을 때 자동 다운로드
-if (AUTO_DOWNLOAD_ON_DELETE) {
-exportJsonNow('vocab_list.json');
-}
-setQuestion(pickRandom());
+const knowIt = () => {
+  if (!current) return;
+  const deletedWord = current.word;
+  deleteWord(deletedWord);     // 공통 함수 사용
+  setQuestion(pickRandom());
 };
 
     // ====== 이벤트 ======
-    el('add').onclick = () => {
-      const word = normalizeWord(w.value);
-      const meanings = parseMeanings(m.value);
-      if (!word || meanings.length === 0) { msg.textContent = '단어와 뜻을 모두 입력하세요.'; return; }
-      if (vocab.some(x => sameWord(x.word, word))) { msg.textContent = `이미 존재: '${word}'`; w.value=''; m.value=''; return; }
-      vocab.push({ word, meaning: meanings });
-      saveVocab(vocab); updateList(); msg.textContent = `추가됨: ${word}`; w.value=''; m.value=''; w.focus();
-    };
+  el('add').onclick = () => {
+  const word = normalizeWord(w.value);
+  const meanings = parseMeanings(m.value);
+  if (!word || meanings.length === 0) { msg.textContent = '단어와 뜻을 모두 입력하세요.'; return; }
+
+  if (hasWord(word)) {            // ← 변경: 공통 함수 사용
+    msg.textContent = `이미 존재: '${word}' (영어 기준 중복 차단)`;
+    w.value=''; m.value=''; w.focus();
+    return;
+  }
+
+  vocab.push({ word, meaning: meanings });
+  saveVocab(vocab);
+  updateList();
+  msg.textContent = `추가됨: ${word}`;
+  w.value=''; m.value=''; w.focus();
+};
 
     el('clearInput').onclick = () => { w.value=''; m.value=''; w.focus(); msg.textContent=''; };
 
@@ -308,26 +359,33 @@ setQuestion(pickRandom());
     };
 
     el('importBtn').onclick = async () => {
-      const f = el('file').files[0];
-      if (!f) return;
-      const text = await f.text();
-      let items = [];
-      if (f.name.toLowerCase().endsWith('.json')) {
-        try { items = JSON.parse(text); } catch { alert('JSON 파싱 실패'); return; }
-      } else if (f.name.toLowerCase().endsWith('.csv')) {
-        items = parseCSV(text);
-      }
-      if (!Array.isArray(items)) { alert('형식 오류'); return; }
-      let added = 0;
-      for (const it of items) {
-        const word = normalizeWord(it.word);
-        const meaning = Array.isArray(it.meaning) ? it.meaning.map(x=>String(x).trim()).filter(Boolean) : [];
-        if (!word || !meaning.length) continue;
-        if (vocab.some(x => sameWord(x.word, word))) continue;
-        vocab.push({ word, meaning }); added++;
-      }
-      saveVocab(vocab); updateList(); alert(`${added}개 추가됨`);
-    };
+  const f = el('file').files[0];
+  if (!f) return;
+  const text = await f.text();
+  let items = [];
+  if (f.name.toLowerCase().endsWith('.json')) {
+    try { items = JSON.parse(text); } catch { alert('JSON 파싱 실패'); return; }
+  } else if (f.name.toLowerCase().endsWith('.csv')) {
+    items = parseCSV(text);
+  }
+  if (!Array.isArray(items)) { alert('형식 오류'); return; }
+
+  // 파일 안의 자체 중복도 먼저 제거(첫 항목만 유지)
+  items = dedupeListKeepFirst(items);
+
+  let added = 0, skipped = 0;
+  for (const it of items) {
+    const word = normalizeWord(it.word);
+    const meaning = Array.isArray(it.meaning) ? it.meaning.map(x=>String(x).trim()).filter(Boolean) : [];
+    if (!word || !meaning.length) { skipped++; continue; }
+    if (hasWord(word)) { skipped++; continue; }     // ← 변경: 영어 기준 중복 스킵
+    vocab.push({ word, meaning }); added++;
+  }
+
+  saveVocab(vocab);
+  updateList();
+  alert(`${added}개 추가됨, ${skipped}개 중복/무효 스킵됨`);
+};
 
     el('resetAll').onclick = () => {
       if (!confirm('모든 단어를 삭제할까요?')) return;
@@ -338,11 +396,20 @@ setQuestion(pickRandom());
     updateList(); renderStats(); setQuestion(pickRandom());
 
     // 페이지 첫 로드 시, LocalStorage가 비어 있으면 원본 JSON을 fetch해서 채우기
-(async () => {
+
+    (async () => {
   if (!localStorage.getItem('vocab_list')) {
-    const res = await fetch('vocab_list_dedup.json'); // 같은 저장소에 파일 추가
-    const data = await res.json();
+    const res = await fetch('vocab_list_dedup.json');
+    let data = await res.json();
+
+    // 파일 내부 중복 제거(첫 항목만 유지)
+    data = dedupeListKeepFirst(data);
+
+    // 이미 LocalStorage가 비어있으니 있는 그대로 저장
     localStorage.setItem('vocab_list', JSON.stringify(data));
+    vocab = data;                     // 메모리 상태 갱신
+    updateList();
+    setQuestion(pickRandom());
   }
 })();
   </script>
