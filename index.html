@@ -73,6 +73,7 @@
       <div class="split">
         <div class="field">
           <label>JSON/CSV 가져오기</label>
+          <label><input type="checkbox" id="overwrite"> 덮어쓰기</label>
           <input id="file" type="file" accept=".json,.csv" />
         </div>
         <div class="field">
@@ -85,6 +86,7 @@
           <button id="exportJson">JSON 내보내기</button>
           <button id="exportCsv">CSV 내보내기</button>
           <button id="resetAll" title="모든 단어 삭제">전체 초기화</button>
+          <button id="syncRemote">원본 다시받기(덮어쓰기)</button>
         </div>
         <div class="muted">브라우저에 로컬 저장됩니다.</div>
       </div>
@@ -137,6 +139,7 @@ const deleteWord = (word) => {
   vocab = vocab.filter(x => (x.word || '').trim().toLowerCase() !== normalized);
   saveVocab(vocab);
   updateList();
+  if (AUTO_DOWNLOAD_ON_DELETE) exportJsonNow('vocab_list.json');
   alert(`'${word}' 단어가 삭제되었습니다.`);
 };
 // (추가) 삭제 시 최신 JSON 자동 다운로드할지 여부
@@ -384,10 +387,17 @@ const knowIt = () => {
   alert(`${added}개 추가됨, ${skipped}개 중복/무효 스킵됨`);
 };
 
-    el('resetAll').onclick = () => {
-      if (!confirm('모든 단어를 삭제할까요?')) return;
-      vocab = []; saveVocab(vocab); updateList(); setQuestion(null);
-    };
+  document.getElementById('syncRemote').onclick = async () => {
+  if (!confirm('원본 JSON으로 이 기기 목록을 덮어쓸까요?')) return;
+  const res = await fetch('vocab_list.json?ts=' + Date.now()); // 캐시 무력화
+  const raw = await res.json();        // ← 따로 빼주기
+  const data = dedupeListKeepFirst(raw);
+  vocab = data;
+  saveVocab(vocab);
+  updateList();
+  setQuestion(pickRandom());
+  alert('동기화 완료');
+};
 
     // ====== 초기 렌더 ======
     updateList(); renderStats(); setQuestion(pickRandom());
