@@ -86,7 +86,7 @@
           <button id="exportJson">JSON 내보내기</button>
           <button id="exportCsv">CSV 내보내기</button>
           <button id="resetAll" title="모든 단어 삭제">전체 초기화</button>
-          <button id="syncRemote">원본 다시받기(덮어쓰기)</button>
+          <button id="exportServer">서버 반영용 JSON</button>
         </div>
         <div class="muted">브라우저에 로컬 저장됩니다.</div>
       </div>
@@ -322,26 +322,6 @@ const knowIt = () => {
     });
 
     // ====== 가져오기/내보내기 ======
-    el('exportJson').onclick = () => {
-      const blob = new Blob([JSON.stringify(vocab, null, 2)], {type:'application/json'});
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'vocab_list.json';
-      a.click();
-      URL.revokeObjectURL(a.href);
-    };
-
-    el('exportCsv').onclick = () => {
-      const rows = [['word','meaning']].concat(vocab.map(v=>[v.word, v.meaning.join('|')]));
-      const csv = rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(',')).join('\n');
-      const blob = new Blob([csv], {type:'text/csv'});
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'vocab_list.csv';
-      a.click();
-      URL.revokeObjectURL(a.href);
-    };
-
     const parseCSV = (text) => {
       // 매우 단순한 CSV 파서: 첫 행은 헤더(word, meaning). meaning은 '|'로 여러 뜻.
       const lines = text.split(/\r?\n/).filter(Boolean);
@@ -370,6 +350,22 @@ const knowIt = () => {
   }
   if (!Array.isArray(items)) { alert('형식 오류'); return; }
 
+  // 삭제 기록 반영된 현재 목록을 얻는 헬퍼
+const filteredForExport = () =>
+  vocab.filter(it => !deletedSet.has((it.word||'').trim().toLowerCase()));
+
+// 서버 반영용 JSON 내보내기 버튼
+document.getElementById('exportServer').onclick = () => {
+  const data = dedupeListKeepFirst(filteredForExport());
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'vocab_list.json'; // 이 파일로 서버의 vocab_list.json을 교체
+  a.click();
+  URL.revokeObjectURL(a.href);
+  alert('서버 교체용 JSON을 저장했습니다. 배포 중인 vocab_list.json을 이 파일로 교체하세요.');
+};
+
   // 파일 안의 자체 중복도 먼저 제거(첫 항목만 유지)
   items = dedupeListKeepFirst(items);
 
@@ -385,18 +381,6 @@ const knowIt = () => {
   saveVocab(vocab);
   updateList();
   alert(`${added}개 추가됨, ${skipped}개 중복/무효 스킵됨`);
-};
-
-  document.getElementById('syncRemote').onclick = async () => {
-  if (!confirm('원본 JSON으로 이 기기 목록을 덮어쓸까요?')) return;
-  const res = await fetch('vocab_list.json?ts=' + Date.now()); // 캐시 무력화
-  const raw = await res.json();        // ← 따로 빼주기
-  const data = dedupeListKeepFirst(raw);
-  vocab = data;
-  saveVocab(vocab);
-  updateList();
-  setQuestion(pickRandom());
-  alert('동기화 완료');
 };
 
     // ====== 초기 렌더 ======
