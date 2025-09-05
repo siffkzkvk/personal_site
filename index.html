@@ -2,7 +2,6 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
-  <meta http-equiv="refresh" content="0; url=/English/">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>영단어 암기 MVP</title>
   <style>
@@ -400,7 +399,7 @@ const knowIt = () => {
 
     (async () => {
   if (!localStorage.getItem('vocab_list')) {
-    const res = await fetch('./vocab_list.json');
+    const res = await fetch('vocab_list.json');
     let data = await res.json();
 
     // 파일 내부 중복 제거(첫 항목만 유지)
