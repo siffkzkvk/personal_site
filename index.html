@@ -337,6 +337,28 @@ document.getElementById('resetAll').onclick = () => {
     setQuestion(pickRandom());
   }
 })();
+
+// ====== 초기 렌더 ======
+updateList(); renderStats(); setQuestion(pickRandom());
+
+// ※ 항상 서버 JSON을 받아 LocalStorage와 메모리에 반영 (서버가 진실)
+(async () => {
+  try {
+    const res = await fetch('vocab_list.json?ts=' + Date.now()); // 캐시 무력화
+    let remote = await res.json();
+    remote = dedupeListKeepFirst(remote);
+
+    // 서버 버전으로 덮어쓰기
+    vocab = remote;
+    saveVocab(vocab);
+
+    updateList();
+    setQuestion(pickRandom());
+  } catch (e) {
+    console.warn('원본 JSON 동기화 실패:', e);
+    // 실패 시엔 기존 localStorage 상태로 계속 사용
+  }
+})();
   </script>
 </body>
 </html>
