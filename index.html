@@ -45,7 +45,7 @@
 </head>
 <body>
   <header>
-    <h1>영단어 암기 MVP (LocalStorage)</h1>
+    <h1>영단어 암기 MVP</h1>
   </header>
 
   <main>
@@ -70,21 +70,8 @@
 
       <hr style="border:none; border-top:1px solid #1f2937; margin:14px 0;" />
 
-      <div class="split">
-        <div class="field">
-          <label>JSON/CSV 가져오기</label>
-          <label><input type="checkbox" id="overwrite"> 덮어쓰기</label>
-          <input id="file" type="file" accept=".json,.csv" />
-        </div>
-        <div class="field">
-          <label>&nbsp;</label>
-          <button id="importBtn">불러오기</button>
-        </div>
-      </div>
       <div class="row">
         <div class="actions">
-          <button id="exportJson">JSON 내보내기</button>
-          <button id="exportCsv">CSV 내보내기</button>
           <button id="resetAll" title="모든 단어 삭제">전체 초기화</button>
           <button id="exportServer">서버 반영용 JSON</button>
         </div>
@@ -131,28 +118,13 @@
   </main>
 
   <script>
-// ... (기존 AUTO_DOWNLOAD_ON_DELETE, exportJsonNow 위에/아래 상관없음)
-
 // 공통 삭제 함수
 const deleteWord = (word) => {
-  const normalized = (word || '').trim().toLowerCase();
-  vocab = vocab.filter(x => (x.word || '').trim().toLowerCase() !== normalized);
+  const k = norm(word);
+  vocab = vocab.filter(x => norm(x.word) !== k);
   saveVocab(vocab);
   updateList();
-  if (AUTO_DOWNLOAD_ON_DELETE) exportJsonNow('vocab_list.json');
   alert(`'${word}' 단어가 삭제되었습니다.`);
-};
-// (추가) 삭제 시 최신 JSON 자동 다운로드할지 여부
-const AUTO_DOWNLOAD_ON_DELETE = true;
-
-// (추가) 현재 vocab을 즉시 JSON 파일로 다운로드하는 함수
-const exportJsonNow = (filename = 'vocab_list.json') => {
-  const blob = new Blob([JSON.stringify(vocab, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(a.href);
 };
 
 // 공통: 소문자/공백 정규화
@@ -321,66 +293,28 @@ const knowIt = () => {
       if (e.key === 'Tab') { e.preventDefault(); knowIt(); }
     });
 
-    // ====== 가져오기/내보내기 ======
-    const parseCSV = (text) => {
-      // 매우 단순한 CSV 파서: 첫 행은 헤더(word, meaning). meaning은 '|'로 여러 뜻.
-      const lines = text.split(/\r?\n/).filter(Boolean);
-      if (lines.length === 0) return [];
-      const out = [];
-      for (let i=1;i<lines.length;i++){
-        const cols = lines[i].split(',');
-        if (!cols.length) continue;
-        const word = cols[0].replace(/^\"|\"$/g,'').trim();
-        const meaningRaw = (cols[1]||'').replace(/^\"|\"$/g,'').trim();
-        const meaning = meaningRaw ? meaningRaw.split('|').map(x=>x.trim()).filter(Boolean) : [];
-        if (word && meaning.length) out.push({word, meaning});
-      }
-      return out;
-    };
-
-    el('importBtn').onclick = async () => {
-  const f = el('file').files[0];
-  if (!f) return;
-  const text = await f.text();
-  let items = [];
-  if (f.name.toLowerCase().endsWith('.json')) {
-    try { items = JSON.parse(text); } catch { alert('JSON 파싱 실패'); return; }
-  } else if (f.name.toLowerCase().endsWith('.csv')) {
-    items = parseCSV(text);
-  }
-  if (!Array.isArray(items)) { alert('형식 오류'); return; }
-
   // 삭제 기록 반영된 현재 목록을 얻는 헬퍼
 const filteredForExport = () =>
   vocab.filter(it => !deletedSet.has((it.word||'').trim().toLowerCase()));
 
 // 서버 반영용 JSON 내보내기 버튼
 document.getElementById('exportServer').onclick = () => {
-  const data = dedupeListKeepFirst(filteredForExport());
+  const data = dedupeListKeepFirst(vocab); // 현재 목록을 중복만 정리해서 저장
   const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'vocab_list.json'; // 이 파일로 서버의 vocab_list.json을 교체
+  a.download = 'vocab_list.json';
   a.click();
   URL.revokeObjectURL(a.href);
   alert('서버 교체용 JSON을 저장했습니다. 배포 중인 vocab_list.json을 이 파일로 교체하세요.');
 };
 
-  // 파일 안의 자체 중복도 먼저 제거(첫 항목만 유지)
-  items = dedupeListKeepFirst(items);
-
-  let added = 0, skipped = 0;
-  for (const it of items) {
-    const word = normalizeWord(it.word);
-    const meaning = Array.isArray(it.meaning) ? it.meaning.map(x=>String(x).trim()).filter(Boolean) : [];
-    if (!word || !meaning.length) { skipped++; continue; }
-    if (hasWord(word)) { skipped++; continue; }     // ← 변경: 영어 기준 중복 스킵
-    vocab.push({ word, meaning }); added++;
-  }
-
+document.getElementById('resetAll').onclick = () => {
+  if (!confirm('모든 단어를 삭제할까요? (이 기기 LocalStorage만 초기화)')) return;
+  vocab = [];
   saveVocab(vocab);
   updateList();
-  alert(`${added}개 추가됨, ${skipped}개 중복/무효 스킵됨`);
+  setQuestion(null);
 };
 
     // ====== 초기 렌더 ======
