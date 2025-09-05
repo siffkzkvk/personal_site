@@ -400,7 +400,7 @@ const knowIt = () => {
 
     (async () => {
   if (!localStorage.getItem('vocab_list')) {
-    const res = await fetch('vocab_list_dedup.json');
+    const res = await fetch('./vocab_list.json');
     let data = await res.json();
 
     // 파일 내부 중복 제거(첫 항목만 유지)
@@ -414,18 +414,5 @@ const knowIt = () => {
   }
 })();
   </script>
-  <script>
-(async () => {
-  const res = await fetch("./vocab_list.json");
-  let data = await res.json();
-
-  data = dedupeListKeepFirst(data);
-
-  localStorage.setItem('vocab_list', JSON.stringify(data));
-  vocab = data;
-  updateList();
-  setQuestion(pickRandom());
-})();
-</script>
 </body>
 </html>
