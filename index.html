@@ -138,9 +138,6 @@ const deleteWord = (word) => {
   saveVocab(vocab);
   updateList();
   alert(`'${word}' 단어가 삭제되었습니다.`);
-  if (AUTO_DOWNLOAD_ON_DELETE) {
-    exportJsonNow('vocab_list.json');
-  }
 };
 // (추가) 삭제 시 최신 JSON 자동 다운로드할지 여부
 const AUTO_DOWNLOAD_ON_DELETE = true;
@@ -222,7 +219,7 @@ const dedupeListKeepFirst = (items) => {
         right.className = 'actions';
         const del = document.createElement('button');
         del.textContent = '삭제';
-        del.onclick = () => { vocab = vocab.filter(x => !sameWord(x.word, item.word)); saveVocab(vocab); updateList(); deleteWord(item.word); };
+        del.onclick = () => deleteWord(item.word);
         right.appendChild(del);
         row.appendChild(left); row.appendChild(right);
         listEl.appendChild(row);
