@@ -37,10 +37,7 @@
     .grid2 { display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center; }
     .naver a { color:#93c5fd; text-decoration: underline; font-size: 13px; }
 
-    /* Small screens */
-    @media (max-width: 880px) {
-      main { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 880px) { main { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -118,247 +115,190 @@
   </main>
 
   <script>
-// 공통 삭제 함수
-const deleteWord = (word) => {
-  const k = norm(word);
-  vocab = vocab.filter(x => norm(x.word) !== k);
-  saveVocab(vocab);
-  updateList();
-  alert(`'${word}' 단어가 삭제되었습니다.`);
-};
+  // ====== 상수 ======
+  const LS_KEY = 'vocab_list';                 // [{ word, meaning:[] }]
+  const API_PUBLISH = 'https://vocab-updater.vercel.app/api/publish';
 
-// 공통: 소문자/공백 정규화
-const norm = (s) => (s || '').trim().toLowerCase();
+  // ====== 공통 유틸 ======
+  const norm = (s) => (s || '').trim().toLowerCase();
+  const normalizeWord = (s) => (s||'').trim();
+  const parseMeanings = (s) => (s||'').split(',').map(x=>x.trim()).filter(Boolean);
+  const escapeHtml = (s) => String(s).replace(/[&<>"]+/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-// 현재 목록에 동일 영어 단어가 있는지(영어 기준, 대소문자/공백 무시)
-const hasWord = (word) => vocab.some(x => norm(x.word) === norm(word));
+  // ====== 상태 ======
+  let vocab = [];       // [{word, meaning:[]}]
+  let current = null;   // 현재 {word, meaning:[]}
 
-// 배열에서 영어 기준 중복 제거(첫 항목만 유지, 병합 안 함)
-const dedupeListKeepFirst = (items) => {
-  const seen = new Set();
-  const out = [];
-  for (const it of items) {
-    const key = norm(it.word);
-    if (!key) continue;
-    if (seen.has(key)) continue;       // 이미 본 단어면 스킵
-    seen.add(key);
-    // meaning은 배열로 강제
-    const meaning = Array.isArray(it.meaning) ? it.meaning : (it.meaning ? [String(it.meaning)] : []);
-    out.push({ word: it.word, meaning: meaning.map(s => String(s).trim()).filter(Boolean) });
-  }
-  return out;
-};
-</script>
+  // ====== DOM ======
+  const el = (id) => document.getElementById(id);
+  const w = el('w'), m = el('m'), msg = el('msg');
+  const listEl = el('list'), countEl = el('count');
+  const q = el('q'), a = el('a'), ans = el('ans');
+  const result = el('result'), stats = el('stats'), naver = el('naver');
 
-  <script>
-    // ====== 데이터 저장/로드 ======
-    const LS_KEY = 'vocab_list'; // [{word, meaning:[]}] 구조
-    const STATS_KEY = () => 'stats_' + new Date().toISOString().slice(0,10); // 일자별
+  // ====== 로컬 저장/로드 ======
+  const loadVocab = () => {
+    try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; }
+    catch { return []; }
+  };
+  const saveVocab = (list) => localStorage.setItem(LS_KEY, JSON.stringify(list));
 
-    const loadVocab = () => {
-      try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; }
-      catch { return []; }
-    };
-    const saveVocab = (list) => { localStorage.setItem(LS_KEY, JSON.stringify(list)); };
+  // ====== 목록 렌더 ======
+  const hasWord = (word) => vocab.some(x => norm(x.word) === norm(word));
+  const dedupeListKeepFirst = (items) => {
+    const seen = new Set(); const out = [];
+    for (const it of items || []) {
+      const key = norm(it.word); if (!key || seen.has(key)) continue;
+      seen.add(key);
+      const meaning = Array.isArray(it.meaning) ? it.meaning
+        : (it.meaning ? [String(it.meaning)] : []);
+      out.push({ word: it.word, meaning: meaning.map(s => String(s).trim()).filter(Boolean) });
+    }
+    return out;
+  };
 
-    // ====== 상태 ======
-    let vocab = loadVocab();
-    let current = null; // {word, meaning:[]}
+  const updateList = () => {
+    countEl.textContent = String(vocab.length);
+    listEl.innerHTML = '';
+    if (vocab.length === 0) {
+      listEl.innerHTML = '<div class="muted">단어가 없습니다. 왼쪽에서 추가하세요.</div>';
+      return;
+    }
+    for (const item of vocab) {
+      const row = document.createElement('div');
+      row.className = 'item';
+      const left = document.createElement('div');
+      left.innerHTML = `<div style="font-weight:600">${escapeHtml(item.word)}</div>` +
+                       `<div class="tag">${escapeHtml(item.meaning.join(', '))}</div>`;
+      const right = document.createElement('div');
+      right.className = 'actions';
+      const del = document.createElement('button');
+      del.textContent = '삭제';
+      del.onclick = () => deleteWord(item.word);
+      right.appendChild(del);
+      row.appendChild(left); row.appendChild(right);
+      listEl.appendChild(row);
+    }
+  };
 
-    // ====== DOM ======
-    const el = (id) => document.getElementById(id);
-    const w = el('w'), m = el('m'), msg = el('msg');
-    const listEl = el('list'), countEl = el('count');
-    const q = el('q'), a = el('a'), ans = el('ans');
-    const result = el('result'), stats = el('stats'), naver = el('naver');
+  // ====== 통계 ======
+  const STATS_KEY = () => 'stats_' + new Date().toISOString().slice(0,10);
+  const loadStats = () => {
+    try { return JSON.parse(localStorage.getItem(STATS_KEY())) || { tried:0, correct:0 }; }
+    catch { return { tried:0, correct:0 }; }
+  };
+  const saveStats = (s) => localStorage.setItem(STATS_KEY(), JSON.stringify(s));
+  const renderStats = () => {
+    const s = loadStats();
+    const rate = s.tried ? Math.round((s.correct/s.tried)*100) : 0;
+    stats.textContent = `오늘 ${s.tried}개 · 정답률 ${rate}%`;
+  };
 
-    // ====== 유틸 ======
-    const normalizeWord = (s) => (s||'').trim();
-    const parseMeanings = (s) => (s||'').split(',').map(x=>x.trim()).filter(Boolean);
-    const sameWord = (x,y) => normalizeWord(x).toLowerCase() === normalizeWord(y).toLowerCase();
+  // ====== 학습 흐름 ======
+  const makeNaverLink = (word) => {
+    if (!word) { naver.innerHTML = ''; return; }
+    const q = encodeURIComponent(word);
+    naver.innerHTML = `<a href="https://en.dict.naver.com/#/search?query=${q}" target="_blank" rel="noopener">네이버사전에서 보기 ↗</a>`;
+  };
+  const setQuestion = (item) => {
+    current = item;
+    q.textContent = item ? item.word : '모든 단어를 외웠습니다!';
+    a.textContent = item ? item.meaning.join(', ') : '';
+    a.style.display = 'none';
+    result.textContent = '';
+    ans.value = '';
+    makeNaverLink(item?.word || '');
+    ans.focus();
+  };
+  const showAnswer = (show) => { a.style.display = show ? 'block' : 'none'; };
+  const pickRandom = () => (vocab.length ? vocab[Math.floor(Math.random()*vocab.length)] : null);
 
-    const updateList = () => {
-      countEl.textContent = String(vocab.length);
-      listEl.innerHTML = '';
-      if (vocab.length === 0) {
-        listEl.innerHTML = '<div class="muted">단어가 없습니다. 왼쪽에서 추가하세요.</div>';
-        return;
-      }
-      for (const item of vocab) {
-        const row = document.createElement('div');
-        row.className = 'item';
-        const left = document.createElement('div');
-        left.innerHTML = `<div style="font-weight:600">${escapeHtml(item.word)}</div>` +
-                         `<div class="tag">${escapeHtml(item.meaning.join(', '))}</div>`;
-        const right = document.createElement('div');
-        right.className = 'actions';
-        const del = document.createElement('button');
-        del.textContent = '삭제';
-        del.onclick = () => deleteWord(item.word);
-        right.appendChild(del);
-        row.appendChild(left); row.appendChild(right);
-        listEl.appendChild(row);
-      }
-    };
+  const check = () => {
+    if (!current) { result.textContent = '단어를 먼저 불러오세요.'; return; }
+    const user = ans.value.trim();
+    if (!user) { result.textContent = '답을 입력하세요.'; return; }
+    const ok = current.meaning.some(m => m && user.includes(m));
+    const s = loadStats(); s.tried += 1; if (ok) s.correct += 1; saveStats(s); renderStats();
+    result.textContent = ok ? '정답!' : `오답! 정답: ${current.meaning.join(', ')}`;
+    showAnswer(true);
+  };
+  const next = () => setQuestion(pickRandom());
+  const deleteWord = (word) => {
+    const k = norm(word);
+    vocab = vocab.filter(x => norm(x.word) !== k);
+    saveVocab(vocab); updateList(); alert(`'${word}' 단어가 삭제되었습니다.`);
+  };
+  const knowIt = () => { if (!current) return; deleteWord(current.word); setQuestion(pickRandom()); };
 
-    const escapeHtml = (s) => s.replace(/[&<>"]+/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-
-    const pickRandom = () => {
-      if (vocab.length === 0) return null;
-      return vocab[Math.floor(Math.random()*vocab.length)];
-    };
-
-    const makeNaverLink = (word) => {
-      if (!word) { naver.innerHTML = ''; return; }
-      const q = encodeURIComponent(word);
-      const url = `https://en.dict.naver.com/#/search?query=${q}`;
-      naver.innerHTML = `<a href="${url}" target="_blank" rel="noopener">네이버사전에서 보기 ↗</a>`;
-    };
-
-    const loadStats = () => {
-      try { return JSON.parse(localStorage.getItem(STATS_KEY())) || { tried:0, correct:0 }; }
-      catch { return { tried:0, correct:0 }; }
-    };
-    const saveStats = (s) => { localStorage.setItem(STATS_KEY(), JSON.stringify(s)); };
-
-    const renderStats = () => {
-      const s = loadStats();
-      const rate = s.tried ? Math.round((s.correct/s.tried)*100) : 0;
-      stats.textContent = `오늘 ${s.tried}개 · 정답률 ${rate}%`;
-    };
-
-    // ====== 학습 흐름 ======
-    const setQuestion = (item) => {
-      current = item;
-      q.textContent = item ? item.word : '모든 단어를 외웠습니다!';
-      a.textContent = item ? item.meaning.join(', ') : '';
-      a.style.display = 'none';
-      result.textContent = '';
-      ans.value = '';
-      makeNaverLink(item?.word || '');
-      ans.focus();
-    };
-
-    const showAnswer = (show) => { a.style.display = show ? 'block' : 'none'; };
-
-    const check = () => {
-      if (!current) { result.textContent = '단어를 먼저 불러오세요.'; return; }
-      const user = ans.value.trim();
-      if (!user) { result.textContent = '답을 입력하세요.'; return; }
-      const ok = current.meaning.some(m => m && user.includes(m));
-      const s = loadStats();
-      s.tried += 1; if (ok) s.correct += 1; saveStats(s); renderStats();
-      result.textContent = ok ? '정답!' : `오답! 정답: ${current.meaning.join(', ')}`;
-      showAnswer(true);
-    };
-
-    const next = () => setQuestion(pickRandom());
-
-const knowIt = () => {
-  if (!current) return;
-  const deletedWord = current.word;
-  deleteWord(deletedWord);     // 공통 함수 사용
-  setQuestion(pickRandom());
-};
-
-    // ====== 이벤트 ======
+  // ====== 이벤트 ======
   el('add').onclick = () => {
-  const word = normalizeWord(w.value);
-  const meanings = parseMeanings(m.value);
-  if (!word || meanings.length === 0) { msg.textContent = '단어와 뜻을 모두 입력하세요.'; return; }
+    const word = normalizeWord(w.value);
+    const meanings = parseMeanings(m.value);
+    if (!word || meanings.length === 0) { msg.textContent = '단어와 뜻을 모두 입력하세요.'; return; }
+    if (hasWord(word)) { msg.textContent = `이미 존재: '${word}' (영어 기준 중복 차단)`; w.value=''; m.value=''; w.focus(); return; }
+    vocab.push({ word, meaning: meanings }); saveVocab(vocab); updateList();
+    msg.textContent = `추가됨: ${word}`; w.value=''; m.value=''; w.focus();
+  };
+  el('clearInput').onclick = () => { w.value=''; m.value=''; w.focus(); msg.textContent=''; };
+  el('submit').onclick = check;
+  el('next').onclick   = next;
+  el('show').onclick   = () => showAnswer(a.style.display==='none');
+  el('load').onclick   = () => setQuestion(pickRandom());
+  el('know').onclick   = knowIt;
 
-  if (hasWord(word)) {            // ← 변경: 공통 함수 사용
-    msg.textContent = `이미 존재: '${word}' (영어 기준 중복 차단)`;
-    w.value=''; m.value=''; w.focus();
-    return;
-  }
+  ans.addEventListener('keydown', (e)=>{
+    if (e.key === 'Enter') { e.preventDefault(); check(); }
+    if (e.key === 'Tab')   { e.preventDefault(); knowIt(); }
+  });
 
-  vocab.push({ word, meaning: meanings });
-  saveVocab(vocab);
-  updateList();
-  msg.textContent = `추가됨: ${word}`;
-  w.value=''; m.value=''; w.focus();
-};
+  // ====== 서버 반영(자동 커밋) ======
+  el('exportServer').onclick = async () => {
+    const btn = el('exportServer');
+    btn.disabled = true; const old = btn.textContent; btn.textContent = '서버 반영 중...';
+    try {
+      const payload = { data: dedupeListKeepFirst(vocab), message: `Update from UI ${new Date().toISOString()}` };
+      const r = await fetch(API_PUBLISH, {
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload)
+      });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j?.message || j?.error || r.status);
+      alert('서버 반영 완료! commit: ' + (j.commit || 'ok'));
+    } catch (e) {
+      alert('업로드 실패: ' + e.message);
+    } finally {
+      btn.disabled = false; btn.textContent = old;
+    }
+  };
 
-    el('clearInput').onclick = () => { w.value=''; m.value=''; w.focus(); msg.textContent=''; };
+  // ====== 전체 초기화 ======
+  el('resetAll').onclick = () => {
+    if (!confirm('모든 단어를 삭제할까요? (이 기기 LocalStorage만 초기화)')) return;
+    vocab = []; saveVocab(vocab); updateList(); setQuestion(null);
+  };
 
-    el('submit').onclick = check;
-    el('next').onclick = next;
-    el('show').onclick = () => showAnswer(a.style.display==='none');
-    el('load').onclick = () => setQuestion(pickRandom());
-    el('know').onclick = knowIt;
+  // ====== 초기화 (단 한 번) ======
+  async function init() {
+    // 1) LocalStorage 읽기
+    vocab = loadVocab();
 
-    ans.addEventListener('keydown', (e)=>{
-      if (e.key === 'Enter') { e.preventDefault(); check(); }
-      if (e.key === 'Tab') { e.preventDefault(); knowIt(); }
-    });
+    // 2) 비어 있으면 서버 JSON으로 시드(최초 한 번)
+    if (!vocab || vocab.length === 0) {
+      try {
+        const res = await fetch('vocab_list.json?ts=' + Date.now());
+        let data = await res.json();
+        vocab = dedupeListKeepFirst(data);
+        saveVocab(vocab);
+      } catch (e) {
+        console.warn('초기 시드 실패:', e);
+        vocab = [];
+      }
+    }
 
-  // 삭제 기록 반영된 현재 목록을 얻는 헬퍼
-const filteredForExport = () =>
-  vocab.filter(it => !deletedSet.has((it.word||'').trim().toLowerCase()));
-
-// 서버 반영용 JSON 내보내기 버튼
-document.getElementById('exportServer').onclick = () => {
-  const data = dedupeListKeepFirst(vocab); // 현재 목록을 중복만 정리해서 저장
-  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'vocab_list.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
-  alert('서버 교체용 JSON을 저장했습니다. 배포 중인 vocab_list.json을 이 파일로 교체하세요.');
-};
-
-document.getElementById('resetAll').onclick = () => {
-  if (!confirm('모든 단어를 삭제할까요? (이 기기 LocalStorage만 초기화)')) return;
-  vocab = [];
-  saveVocab(vocab);
-  updateList();
-  setQuestion(null);
-};
-
-    // ====== 초기 렌더 ======
+    // 3) 단 한 번만 렌더
     updateList(); renderStats(); setQuestion(pickRandom());
-
-    // 페이지 첫 로드 시, LocalStorage가 비어 있으면 원본 JSON을 fetch해서 채우기
-
-    (async () => {
-  if (!localStorage.getItem('vocab_list')) {
-    const res = await fetch('vocab_list.json');
-    let data = await res.json();
-
-    // 파일 내부 중복 제거(첫 항목만 유지)
-    data = dedupeListKeepFirst(data);
-
-    // 이미 LocalStorage가 비어있으니 있는 그대로 저장
-    localStorage.setItem('vocab_list', JSON.stringify(data));
-    vocab = data;                     // 메모리 상태 갱신
-    updateList();
-    setQuestion(pickRandom());
   }
-})();
 
-// ====== 초기 렌더 ======
-updateList(); renderStats(); setQuestion(pickRandom());
-
-// ※ 항상 서버 JSON을 받아 LocalStorage와 메모리에 반영 (서버가 진실)
-(async () => {
-  try {
-    const res = await fetch('vocab_list.json?ts=' + Date.now()); // 캐시 무력화
-    let remote = await res.json();
-    remote = dedupeListKeepFirst(remote);
-
-    // 서버 버전으로 덮어쓰기
-    vocab = remote;
-    saveVocab(vocab);
-
-    updateList();
-    setQuestion(pickRandom());
-  } catch (e) {
-    console.warn('원본 JSON 동기화 실패:', e);
-    // 실패 시엔 기존 localStorage 상태로 계속 사용
-  }
-})();
+  init();
   </script>
 </body>
 </html>
