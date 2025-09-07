@@ -1,14 +1,1442 @@
 [
   {
-    "word": "acknowledge one's hard work",
-    "meaning": [
-      "~의 노고를 인정[칭찬]하다"
-    ]
-  },
-  {
     "word": "expand one's presence",
     "meaning": [
       "~의 영향력을 넓히다"
+    ]
+  },
+  {
+    "word": "expedite a process",
+    "meaning": [
+      "과정을 신속하게 하다"
+    ]
+  },
+  {
+    "word": "have access to",
+    "meaning": [
+      "~에 접근할 수 있다",
+      "~을 이용할 수 있다"
+    ]
+  },
+  {
+    "word": "display initiative",
+    "meaning": [
+      "진취성을 발휘하다",
+      "독창력을 발휘하다"
+    ]
+  },
+  {
+    "word": "extend an offer",
+    "meaning": [
+      "제안하다"
+    ]
+  },
+  {
+    "word": "pose a risk",
+    "meaning": [
+      "해가 되다",
+      "위험을 끼치다"
+    ]
+  },
+  {
+    "word": "pay attention (to)",
+    "meaning": [
+      "~에 관심을 기울이다"
+    ]
+  },
+  {
+    "word": "earn a commendation",
+    "meaning": [
+      "칭찬을 받다",
+      "포상을 받다"
+    ]
+  },
+  {
+    "word": "settle a dispute",
+    "meaning": [
+      "분쟁을 해결하다"
+    ]
+  },
+  {
+    "word": "have reservations (about)",
+    "meaning": [
+      "~에 대해서 의구심을 갖다"
+    ]
+  },
+  {
+    "word": "hold a position",
+    "meaning": [
+      "직위를 유지하다"
+    ]
+  },
+  {
+    "word": "comprehensive research",
+    "meaning": [
+      "포괄적인 조사",
+      "대대적인 조사"
+    ]
+  },
+  {
+    "word": "urgent attention",
+    "meaning": [
+      "시급한 관심",
+      "긴급한 주의"
+    ]
+  },
+  {
+    "word": "informed decision",
+    "meaning": [
+      "현명한 결정"
+    ]
+  },
+  {
+    "word": "a wide range of",
+    "meaning": [
+      "매우 다양한"
+    ]
+  },
+  {
+    "word": "regular customer",
+    "meaning": [
+      "단골 고객"
+    ]
+  },
+  {
+    "word": "rigorous standard",
+    "meaning": [
+      "엄격한 기준"
+    ]
+  },
+  {
+    "word": "conservative estimate",
+    "meaning": [
+      "보수적인 추정"
+    ]
+  },
+  {
+    "word": "thoroughly inspect",
+    "meaning": [
+      "철저하게 점검하다"
+    ]
+  },
+  {
+    "word": "adversely affect",
+    "meaning": [
+      "부정적인 영향을 미치다"
+    ]
+  },
+  {
+    "word": "clearly state",
+    "meaning": [
+      "명확히 밝히다"
+    ]
+  },
+  {
+    "word": "favorably respond",
+    "meaning": [
+      "긍정적으로 반응하다"
+    ]
+  },
+  {
+    "word": "be being actively considered",
+    "meaning": [
+      "적극 검토 중이다"
+    ]
+  },
+  {
+    "word": "end abruptly",
+    "meaning": [
+      "갑자기 끝나다"
+    ]
+  },
+  {
+    "word": "share externally",
+    "meaning": [
+      "외부에 공유하다"
+    ]
+  },
+  {
+    "word": "vary considerably",
+    "meaning": [
+      "상당히 다르다"
+    ]
+  },
+  {
+    "word": "strictly enforce",
+    "meaning": [
+      "엄격히 시행하다"
+    ]
+  },
+  {
+    "word": "densely populated",
+    "meaning": [
+      "인구 밀도가 높은"
+    ]
+  },
+  {
+    "word": "highly regarded",
+    "meaning": [
+      "매우 인정받는"
+    ]
+  },
+  {
+    "word": "prominently posted",
+    "meaning": [
+      "눈에 띄게 게시된"
+    ]
+  },
+  {
+    "word": "readily accessible",
+    "meaning": [
+      "쉽게 접근 가능한"
+    ]
+  },
+  {
+    "word": "mutually beneficial",
+    "meaning": [
+      "상호 이익이 되는"
+    ]
+  },
+  {
+    "word": "fully operational",
+    "meaning": [
+      "완전 가동되는"
+    ]
+  },
+  {
+    "word": "directly responsible",
+    "meaning": [
+      "직접적으로 책임이 있는"
+    ]
+  },
+  {
+    "word": "marginally successful",
+    "meaning": [
+      "미미하게 성공한"
+    ]
+  },
+  {
+    "word": "moderately successful",
+    "meaning": [
+      "적당히 성공한"
+    ]
+  },
+  {
+    "word": "phenomenally successful",
+    "meaning": [
+      "경이적으로 성공한"
+    ]
+  },
+  {
+    "word": "allow for",
+    "meaning": [
+      "~을 감안하다",
+      "참작하다"
+    ]
+  },
+  {
+    "word": "proceed with",
+    "meaning": [
+      "~을 계속하다",
+      "진행하다"
+    ]
+  },
+  {
+    "word": "proceed to",
+    "meaning": [
+      "~로 가다"
+    ]
+  },
+  {
+    "word": "comply with",
+    "meaning": [
+      "~을 준수하다"
+    ]
+  },
+  {
+    "word": "attend to",
+    "meaning": [
+      "~을 처리하다",
+      "돌보다"
+    ]
+  },
+  {
+    "word": "object to",
+    "meaning": [
+      "~에 반대하다"
+    ]
+  },
+  {
+    "word": "register for",
+    "meaning": [
+      "~에 등록하다"
+    ]
+  },
+  {
+    "word": "lead to",
+    "meaning": [
+      "~로 이어지다",
+      "결과가 ~이다"
+    ]
+  },
+  {
+    "word": "look for",
+    "meaning": [
+      "~을 찾다"
+    ]
+  },
+  {
+    "word": "look into",
+    "meaning": [
+      "~을 조사하다",
+      "~을 주의 깊게 살피다"
+    ]
+  },
+  {
+    "word": "cope with",
+    "meaning": [
+      "~에 대처하다",
+      "대응하다"
+    ]
+  },
+  {
+    "word": "coincide with",
+    "meaning": [
+      "~와 동시에 일어나다",
+      "~과 일치하다"
+    ]
+  },
+  {
+    "word": "emerge as",
+    "meaning": [
+      "~로 부상하다"
+    ]
+  },
+  {
+    "word": "dispose of",
+    "meaning": [
+      "~을 처리하다",
+      "없애다"
+    ]
+  },
+  {
+    "word": "refrain from",
+    "meaning": [
+      "~을 자제하다",
+      "삼가다"
+    ]
+  },
+  {
+    "word": "interfere with",
+    "meaning": [
+      "~을 방해하다"
+    ]
+  },
+  {
+    "word": "succeed to",
+    "meaning": [
+      "~의 뒤를 잇다",
+      "~에 계승하다"
+    ]
+  },
+  {
+    "word": "specialize in",
+    "meaning": [
+      "~을 전문으로 하다"
+    ]
+  },
+  {
+    "word": "account for",
+    "meaning": [
+      "~을 설명하다",
+      "(비율을) 차지하다"
+    ]
+  },
+  {
+    "word": "refer to",
+    "meaning": [
+      "~을 참조하다",
+      "언급하다"
+    ]
+  },
+  {
+    "word": "depend on",
+    "meaning": [
+      "~에 의지하다",
+      "~에 달려 있다"
+    ]
+  },
+  {
+    "word": "care about",
+    "meaning": [
+      "~을 신경 쓰다",
+      "~에 관심을 가지다"
+    ]
+  },
+  {
+    "word": "go through",
+    "meaning": [
+      "~을 겪다",
+      "~을 지나가다",
+      "~을 조사하다"
+    ]
+  },
+  {
+    "word": "stop by",
+    "meaning": [
+      "~에 들르다"
+    ]
+  },
+  {
+    "word": "adapt to",
+    "meaning": [
+      "~에 적응하다"
+    ]
+  },
+  {
+    "word": "expand into",
+    "meaning": [
+      "~로 진출하다"
+    ]
+  },
+  {
+    "word": "call off",
+    "meaning": [
+      "~을 취소하다"
+    ]
+  },
+  {
+    "word": "fill out",
+    "meaning": [
+      "~을 작성하다",
+      "기입하다"
+    ]
+  },
+  {
+    "word": "concentrate on",
+    "meaning": [
+      "~에 집중하다"
+    ]
+  },
+  {
+    "word": "turn out",
+    "meaning": [
+      "~으로 드러나다",
+      "판명되다"
+    ]
+  },
+  {
+    "word": "work on",
+    "meaning": [
+      "~에 착수하다",
+      "애쓰다"
+    ]
+  },
+  {
+    "word": "turn down",
+    "meaning": [
+      "~을 거절하다"
+    ]
+  },
+  {
+    "word": "revert to",
+    "meaning": [
+      "~로 되돌아가다"
+    ]
+  },
+  {
+    "word": "lag behind",
+    "meaning": [
+      "~보다 뒤처지다"
+    ]
+  },
+  {
+    "word": "go over",
+    "meaning": [
+      "~을 검토하다",
+      "조사하다"
+    ]
+  },
+  {
+    "word": "cater to",
+    "meaning": [
+      "~의 요구에 응하다"
+    ]
+  },
+  {
+    "word": "mark down",
+    "meaning": [
+      "~의 가격을 내리다"
+    ]
+  },
+  {
+    "word": "qualify for",
+    "meaning": [
+      "~의 자격을 얻다"
+    ]
+  },
+  {
+    "word": "long for",
+    "meaning": [
+      "~을 열망하다"
+    ]
+  },
+  {
+    "word": "in place",
+    "meaning": [
+      "제자리에 있는",
+      "준비가 된"
+    ]
+  },
+  {
+    "word": "in circulation",
+    "meaning": [
+      "유통 중인"
+    ]
+  },
+  {
+    "word": "on duty",
+    "meaning": [
+      "근무 중인"
+    ]
+  },
+  {
+    "word": "on vacation",
+    "meaning": [
+      "휴가 중인"
+    ]
+  },
+  {
+    "word": "in time",
+    "meaning": [
+      "제시간에",
+      "시간에 맞춰"
+    ]
+  },
+  {
+    "word": "in business",
+    "meaning": [
+      "영업 중인",
+      "운영 중인"
+    ]
+  },
+  {
+    "word": "at ease",
+    "meaning": [
+      "걱정 없는",
+      "편안한"
+    ]
+  },
+  {
+    "word": "in its entirety",
+    "meaning": [
+      "전부",
+      "전체적으로"
+    ]
+  },
+  {
+    "word": "in private",
+    "meaning": [
+      "다른 사람이 없는 데서"
+    ]
+  },
+  {
+    "word": "out of order",
+    "meaning": [
+      "고장 난"
+    ]
+  },
+  {
+    "word": "out of print",
+    "meaning": [
+      "절판된"
+    ]
+  },
+  {
+    "word": "out of service",
+    "meaning": [
+      "사용 불가능한",
+      "작동되지 않는"
+    ]
+  },
+  {
+    "word": "under consideration",
+    "meaning": [
+      "고려 중인"
+    ]
+  },
+  {
+    "word": "under pressure",
+    "meaning": [
+      "압박을 받는",
+      "스트레스를 받는"
+    ]
+  },
+  {
+    "word": "under renovation",
+    "meaning": [
+      "보수 공사 중인"
+    ]
+  },
+  {
+    "word": "under review",
+    "meaning": [
+      "검토 중인"
+    ]
+  },
+  {
+    "word": "on average",
+    "meaning": [
+      "평균적으로",
+      "대체로"
+    ]
+  },
+  {
+    "word": "beyond description",
+    "meaning": [
+      "설명할 수 없는"
+    ]
+  },
+  {
+    "word": "of use",
+    "meaning": [
+      "유용한"
+    ]
+  },
+  {
+    "word": "in use",
+    "meaning": [
+      "사용 중인"
+    ]
+  },
+  {
+    "word": "on demand",
+    "meaning": [
+      "요청하는 대로",
+      "수요가 있는"
+    ]
+  },
+  {
+    "word": "from scratch",
+    "meaning": [
+      "맨 처음부터",
+      "무에서"
+    ]
+  },
+  {
+    "word": "beyond repair",
+    "meaning": [
+      "수리가 불가능한",
+      "수리할 수 없을 정도로"
+    ]
+  },
+  {
+    "word": "upon arrival",
+    "meaning": [
+      "도착 즉시"
+    ]
+  },
+  {
+    "word": "on the rise",
+    "meaning": [
+      "증가하는",
+      "오름세에 있는"
+    ]
+  },
+  {
+    "word": "on the agenda",
+    "meaning": [
+      "의제에 오른",
+      "상정된"
+    ]
+  },
+  {
+    "word": "in one’s absence",
+    "meaning": [
+      "~가 부재 중인",
+      "~가 없는 사이에"
+    ]
+  },
+  {
+    "word": "to no avail",
+    "meaning": [
+      "보람 없이",
+      "소용 없이",
+      "헛되이"
+    ]
+  },
+  {
+    "word": "around the corner",
+    "meaning": [
+      "임박한",
+      "가까운"
+    ]
+  },
+  {
+    "word": "at one's disposal",
+    "meaning": [
+      "마음대로 쓸 수 있는",
+      "자유롭게 사용할 수 있는"
+    ]
+  },
+  {
+    "word": "at one's discretion",
+    "meaning": [
+      "재량으로",
+      "판단에 따라"
+    ]
+  },
+  {
+    "word": "by surprise",
+    "meaning": [
+      "불시에",
+      "뜻밖에"
+    ]
+  },
+  {
+    "word": "in conclusion",
+    "meaning": [
+      "끝으로",
+      "마지막으로"
+    ]
+  },
+  {
+    "word": "in production",
+    "meaning": [
+      "생산 중인"
+    ]
+  },
+  {
+    "word": "in question",
+    "meaning": [
+      "문제의",
+      "해당되는"
+    ]
+  },
+  {
+    "word": "in transit",
+    "meaning": [
+      "운송 중에",
+      "수송 중에"
+    ]
+  },
+  {
+    "word": "in writing",
+    "meaning": [
+      "서면으로"
+    ]
+  },
+  {
+    "word": "of interest",
+    "meaning": [
+      "재미있는",
+      "흥미로운"
+    ]
+  },
+  {
+    "word": "for reference",
+    "meaning": [
+      "참고용으로"
+    ]
+  },
+  {
+    "word": "on display",
+    "meaning": [
+      "전시 중인",
+      "진열 중인"
+    ]
+  },
+  {
+    "word": "on track",
+    "meaning": [
+      "제대로 진행되고 있는"
+    ]
+  },
+  {
+    "word": "on purpose",
+    "meaning": [
+      "고의로",
+      "일부러"
+    ]
+  },
+  {
+    "word": "on installment",
+    "meaning": [
+      "할부로"
+    ]
+  },
+  {
+    "word": "on loan",
+    "meaning": [
+      "대여 중"
+    ]
+  },
+  {
+    "word": "on call",
+    "meaning": [
+      "대기 중인"
+    ]
+  },
+  {
+    "word": "on reserve",
+    "meaning": [
+      "예약 상태인"
+    ]
+  },
+  {
+    "word": "to date",
+    "meaning": [
+      "지금까지"
+    ]
+  },
+  {
+    "word": "to an extent",
+    "meaning": [
+      "어느 정도",
+      "다소"
+    ]
+  },
+  {
+    "word": "to the point",
+    "meaning": [
+      "요점만 얘기하는",
+      "간단명료한"
+    ]
+  },
+  {
+    "word": "since inception",
+    "meaning": [
+      "시작부터"
+    ]
+  },
+  {
+    "word": "under warranty",
+    "meaning": [
+      "보증 기간 중인"
+    ]
+  },
+  {
+    "word": "advance in",
+    "meaning": [
+      "~의 진보",
+      "~로의 승진"
+    ]
+  },
+  {
+    "word": "attention from",
+    "meaning": [
+      "~로부터의 주목"
+    ]
+  },
+  {
+    "word": "alternative to",
+    "meaning": [
+      "~에 대한 대안"
+    ]
+  },
+  {
+    "word": "concern over",
+    "meaning": [
+      "~에 대한 우려",
+      "걱정"
+    ]
+  },
+  {
+    "word": "dispute over",
+    "meaning": [
+      "~에 대한 분쟁",
+      "논란"
+    ]
+  },
+  {
+    "word": "inquiry about",
+    "meaning": [
+      "~에 대한 문의"
+    ]
+  },
+  {
+    "word": "adjustment to",
+    "meaning": [
+      "~에 대한 조정",
+      "수정"
+    ]
+  },
+  {
+    "word": "lead over",
+    "meaning": [
+      "~에 대한 우위",
+      "~보다 선두"
+    ]
+  },
+  {
+    "word": "priority over",
+    "meaning": [
+      "~보다 우선시"
+    ]
+  },
+  {
+    "word": "rebate on",
+    "meaning": [
+      "~에 대한 환급",
+      "환불"
+    ]
+  },
+  {
+    "word": "reservation for",
+    "meaning": [
+      "~에 대한 예약"
+    ]
+  },
+  {
+    "word": "reservation about",
+    "meaning": [
+      "~에 대한 의구심",
+      "주저함"
+    ]
+  },
+  {
+    "word": "standard for",
+    "meaning": [
+      "~에 대한 기준",
+      "표준"
+    ]
+  },
+  {
+    "word": "workshop on",
+    "meaning": [
+      "~에 대한 워크숍",
+      "세미나"
+    ]
+  },
+  {
+    "word": "be responsible for",
+    "meaning": [
+      "~을 책임지다",
+      "~을 담당하다"
+    ]
+  },
+  {
+    "word": "be exempt from",
+    "meaning": [
+      "~에서 면제되다"
+    ]
+  },
+  {
+    "word": "be resistant to",
+    "meaning": [
+      "~에 강하다",
+      "~에 저항력이 있다"
+    ]
+  },
+  {
+    "word": "be vulnerable to",
+    "meaning": [
+      "~에 취약하다"
+    ]
+  },
+  {
+    "word": "be receptive to",
+    "meaning": [
+      "~을 잘 받아들이다"
+    ]
+  },
+  {
+    "word": "be qualified for",
+    "meaning": [
+      "~에 자격이 있다"
+    ]
+  },
+  {
+    "word": "be accessible to",
+    "meaning": [
+      "~에 접근할 수 있다"
+    ]
+  },
+  {
+    "word": "be enthusiastic about",
+    "meaning": [
+      "~에 열정적이다"
+    ]
+  },
+  {
+    "word": "be appreciative of",
+    "meaning": [
+      "~에 대해 감사하다"
+    ]
+  },
+  {
+    "word": "be representative of",
+    "meaning": [
+      "~을 대표하다"
+    ]
+  },
+  {
+    "word": "be indicative of",
+    "meaning": [
+      "~을 나타내다",
+      "~을 시사하다"
+    ]
+  },
+  {
+    "word": "be reflective of",
+    "meaning": [
+      "~을 반영하다"
+    ]
+  },
+  {
+    "word": "be suitable for",
+    "meaning": [
+      "~에 적합하다"
+    ]
+  },
+  {
+    "word": "ideal for",
+    "meaning": [
+      "~에 이상적인"
+    ]
+  },
+  {
+    "word": "be reminiscent of",
+    "meaning": [
+      "~을 연상시키다"
+    ]
+  },
+  {
+    "word": "be dedicated to",
+    "meaning": [
+      "~에 전념하다",
+      "~에 헌신하다"
+    ]
+  },
+  {
+    "word": "be equivalent to",
+    "meaning": [
+      "~과 같다",
+      "~에 상응하다"
+    ]
+  },
+  {
+    "word": "be identical to",
+    "meaning": [
+      "~과 동일하다"
+    ]
+  },
+  {
+    "word": "the same as",
+    "meaning": [
+      "~과 같은"
+    ]
+  },
+  {
+    "word": "be similar to",
+    "meaning": [
+      "~과 유사하다"
+    ]
+  },
+  {
+    "word": "superior to",
+    "meaning": [
+      "~보다 우수한"
+    ]
+  },
+  {
+    "word": "inferior to",
+    "meaning": [
+      "~보다 못한"
+    ]
+  },
+  {
+    "word": "close to",
+    "meaning": [
+      "~에 가까운"
+    ]
+  },
+  {
+    "word": "be used to",
+    "meaning": [
+      "~에 익숙하다"
+    ]
+  },
+  {
+    "word": "be entitled to",
+    "meaning": [
+      "~할 자격이 있다"
+    ]
+  },
+  {
+    "word": "be skeptical of",
+    "meaning": [
+      "~에 대해 회의적이다"
+    ]
+  },
+  {
+    "word": "be considerate of",
+    "meaning": [
+      "~를 배려하다"
+    ]
+  },
+  {
+    "word": "be attentive to",
+    "meaning": [
+      "~에 주의를 기울이다"
+    ]
+  },
+  {
+    "word": "be satisfied with",
+    "meaning": [
+      "~에 만족하다"
+    ]
+  },
+  {
+    "word": "be dependent on",
+    "meaning": [
+      "~에 의존하다",
+      "~에 달려 있다"
+    ]
+  },
+  {
+    "word": "be noted for",
+    "meaning": [
+      "~으로 유명하다"
+    ]
+  },
+  {
+    "word": "be compliant with",
+    "meaning": [
+      "~을 따르다",
+      "~에 순응하다"
+    ]
+  },
+  {
+    "word": "be free of",
+    "meaning": [
+      "~이 없다"
+    ]
+  },
+  {
+    "word": "complete with",
+    "meaning": [
+      "~이 완비된"
+    ]
+  },
+  {
+    "word": "be short of",
+    "meaning": [
+      "~이 부족하다"
+    ]
+  },
+  {
+    "word": "be done with",
+    "meaning": [
+      "~을 끝내다"
+    ]
+  },
+  {
+    "word": "be comparable to",
+    "meaning": [
+      "~에 맞먹다"
+    ]
+  },
+  {
+    "word": "be familiar with",
+    "meaning": [
+      "~에 친숙하다"
+    ]
+  },
+  {
+    "word": "be absent from",
+    "meaning": [
+      "~에 불참하다"
+    ]
+  },
+  {
+    "word": "be impressed with",
+    "meaning": [
+      "~에 감명받다"
+    ]
+  },
+  {
+    "word": "be credited with",
+    "meaning": [
+      "~에 대한 공로를 인정받다"
+    ]
+  },
+  {
+    "word": "be fond of",
+    "meaning": [
+      "~을 좋아하다"
+    ]
+  },
+  {
+    "word": "be based on",
+    "meaning": [
+      "~에 기준을 두다"
+    ]
+  },
+  {
+    "word": "be based in",
+    "meaning": [
+      "~에 본사를 두다"
+    ]
+  },
+  {
+    "word": "be high in",
+    "meaning": [
+      "~의 함량이 높다"
+    ]
+  },
+  {
+    "word": "be scheduled for",
+    "meaning": [
+      "~로 예정되어 있다"
+    ]
+  },
+  {
+    "word": "be crowded with",
+    "meaning": [
+      "~으로 붐비다"
+    ]
+  },
+  {
+    "word": "be full of",
+    "meaning": [
+      "~으로 가득 차다"
+    ]
+  },
+  {
+    "word": "be subject to",
+    "meaning": [
+      "~의 대상이 되다"
+    ]
+  },
+  {
+    "word": "preferable to",
+    "meaning": [
+      "~보다 나은"
+    ]
+  },
+  {
+    "word": "be tasked with",
+    "meaning": [
+      "~하는 임무를 맡다"
+    ]
+  },
+  {
+    "word": "be late for",
+    "meaning": [
+      "~에 늦다"
+    ]
+  },
+  {
+    "word": "inclusive of",
+    "meaning": [
+      "~을 포함하여"
+    ]
+  },
+  {
+    "word": "be acceptable to",
+    "meaning": [
+      "~의 마음에 들다"
+    ]
+  },
+  {
+    "word": "be open to",
+    "meaning": [
+      "~에게 공개되다",
+      "~을 받아들일 용의가 있다"
+    ]
+  },
+  {
+    "word": "be applicable to",
+    "meaning": [
+      "~에 적용되다"
+    ]
+  },
+  {
+    "word": "be busy with",
+    "meaning": [
+      "~으로 바쁘다"
+    ]
+  },
+  {
+    "word": "be native to",
+    "meaning": [
+      "~가 원산지이다",
+      "~ 출신이다"
+    ]
+  },
+  {
+    "word": "superb",
+    "meaning": [
+      "훌륭한"
+    ]
+  },
+  {
+    "word": "attribute",
+    "meaning": [
+      "자질",
+      "속성",
+      "특징"
+    ]
+  },
+  {
+    "word": "a majority of",
+    "meaning": [
+      "대부분의",
+      "다수의"
+    ]
+  },
+  {
+    "word": "formerly",
+    "meaning": [
+      "이전에",
+      "옛날에"
+    ]
+  },
+  {
+    "word": "unbearably",
+    "meaning": [
+      "참을 수 없이"
+    ]
+  },
+  {
+    "word": "security deposit",
+    "meaning": [
+      "보증금"
+    ]
+  },
+  {
+    "word": "soon after",
+    "meaning": [
+      "곧"
+    ]
+  },
+  {
+    "word": "provided that",
+    "meaning": [
+      "만약 ~한다면"
+    ]
+  },
+  {
+    "word": "no matter how",
+    "meaning": [
+      "어떻게 하든"
+    ]
+  },
+  {
+    "word": "contender",
+    "meaning": [
+      "후보자",
+      "경쟁자"
+    ]
+  },
+  {
+    "word": "announce",
+    "meaning": [
+      "발표하다"
+    ]
+  },
+  {
+    "word": "speculate",
+    "meaning": [
+      "추측하다"
+    ]
+  },
+  {
+    "word": "applaud",
+    "meaning": [
+      "박수를 치다"
+    ]
+  },
+  {
+    "word": "found",
+    "meaning": [
+      "설립하다"
+    ]
+  },
+  {
+    "word": "public figure",
+    "meaning": [
+      "유명인사"
+    ]
+  },
+  {
+    "word": "consultancy",
+    "meaning": [
+      "자문회사",
+      "상담"
+    ]
+  },
+  {
+    "word": "in the public eye",
+    "meaning": [
+      "(신문.방송을 통해) 세간의 주목을 받는"
+    ]
+  },
+  {
+    "word": "distinctive",
+    "meaning": [
+      "특색있는",
+      "특유의"
+    ]
+  },
+  {
+    "word": "ongoing basis",
+    "meaning": [
+      "지속적으로"
+    ]
+  },
+  {
+    "word": "customize",
+    "meaning": [
+      "주문제작하다"
+    ]
+  },
+  {
+    "word": "rest assured",
+    "meaning": [
+      "확신해도 된다",
+      "믿어도 된다"
+    ]
+  },
+  {
+    "word": "hands",
+    "meaning": [
+      "관리",
+      "재배"
+    ]
+  },
+  {
+    "word": "in addition to",
+    "meaning": [
+      "~뿐만 아니라"
+    ]
+  },
+  {
+    "word": "accountant",
+    "meaning": [
+      "회계사"
+    ]
+  },
+  {
+    "word": "accounting",
+    "meaning": [
+      "회계(학문)",
+      "회계 업무"
+    ]
+  },
+  {
+    "word": "accounts",
+    "meaning": [
+      "계정",
+      "장부"
+    ]
+  },
+  {
+    "word": "account",
+    "meaning": [
+      "계정",
+      "설명"
     ]
   }
 ]
