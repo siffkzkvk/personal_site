@@ -26,16 +26,6 @@
     .item { display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center; border:1px solid #1f2937; border-radius:12px; padding:10px 12px; background:#0b0e12; }
     .tag { font-size: 11px; color:#9ca3af; }
     .actions { display:flex; gap:8px; }
-    .split { display:grid; grid-template-columns: repeat(2, 1fr); gap:8px; }
-
-    /* Quiz */
-    .quiz { display:grid; gap:10px; }
-    .panel { border: 1px dashed #273244; border-radius: 12px; padding: 16px; min-height: 120px; display:grid; align-content:center; justify-items:center; text-align:center; }
-    .word { font-size: 28px; font-weight: 700; letter-spacing: .2px; }
-    .meaning { font-size: 18px; color:#c7d2fe; }
-    .result { font-size: 14px; }
-    .grid2 { display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center; }
-    .naver a { color:#93c5fd; text-decoration: underline; font-size: 13px; }
 
     @media (max-width: 880px) { main { grid-template-columns: 1fr; } }
   </style>
@@ -68,11 +58,12 @@
       <hr style="border:none; border-top:1px solid #1f2937; margin:14px 0;" />
 
       <div class="row">
-        <div class="actions">
+        <div class="actions" style="flex-wrap:wrap">
+          <button id="pullServer">서버에서 불러오기(갱신)</button>
+          <button id="exportServer">서버로 업로드(덮어쓰기)</button>
           <button id="resetAll" title="모든 단어 삭제">전체 초기화</button>
-          <button id="exportServer">서버 반영용 JSON</button>
         </div>
-        <div class="muted">브라우저에 로컬 저장됩니다.</div>
+        <div class="muted">서버 JSON과 동기화: 불러오기는 서버→로컬, 업로드는 로컬→서버</div>
       </div>
 
       <hr style="border:none; border-top:1px solid #1f2937; margin:14px 0;" />
@@ -83,7 +74,7 @@
 
     <!-- 오른쪽: 학습 -->
     <section class="card">
-      <div class="grid2">
+      <div class="row">
         <h2 style="margin:2px 0 8px 2px; font-size:15px;">학습</h2>
         <div class="muted" id="stats">오늘 0개 · 정답률 0%</div>
       </div>
@@ -94,7 +85,7 @@
           <div class="meaning" id="a" style="display:none"></div>
         </div>
 
-        <div class="grid2">
+        <div class="row">
           <input id="ans" placeholder="한글 뜻 입력" />
           <div class="actions">
             <button id="submit" class="primary">제출</button>
@@ -230,7 +221,7 @@
   };
   const knowIt = () => { if (!current) return; deleteWord(current.word); setQuestion(pickRandom()); };
 
-  // ====== 이벤트 ======
+  // ====== 버튼 이벤트(입력 영역) ======
   el('add').onclick = () => {
     const word = normalizeWord(w.value);
     const meanings = parseMeanings(m.value);
@@ -246,23 +237,49 @@
   el('load').onclick   = () => setQuestion(pickRandom());
   el('know').onclick   = knowIt;
 
-  ans.addEventListener('keydown', (e)=>{
-    if (e.key === 'Enter') { e.preventDefault(); check(); }
-    if (e.key === 'Tab')   { e.preventDefault(); knowIt(); }
-  });
+  // ====== 서버에서 불러오기(PULL: 서버→로컬 덮어쓰기) ======
+  async function pullServer() {
+    try {
+      // 로컬 변경사항이 날아갈 수 있음 → 경고
+      if (vocab.length && !confirm('서버의 내용으로 이 기기의 목록을 덮어쓸까요? (로컬 미반영 수정은 사라질 수 있어요)')) return;
 
-  // ====== 서버 반영(자동 커밋) ======
+      const res = await fetch('vocab_list.json?ts=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.statusText);
+
+      let remote = await res.json();
+      remote = Array.isArray(remote) ? dedupeListKeepFirst(remote) : [];
+
+      vocab = remote;
+      saveVocab(vocab);
+      updateList(); setQuestion(pickRandom());
+      alert('서버에서 최신 목록을 불러왔습니다. (' + vocab.length + '개)');
+    } catch (e) {
+      console.warn('[pull] 실패:', e);
+      alert('서버에서 불러오기에 실패했습니다: ' + e.message);
+    }
+  }
+  el('pullServer').onclick = pullServer;
+
+  // ====== 서버로 업로드(PUSH: 로컬→서버 덮어쓰기) ======
   el('exportServer').onclick = async () => {
     const btn = el('exportServer');
     btn.disabled = true; const old = btn.textContent; btn.textContent = '서버 반영 중...';
     try {
+      if ((vocab?.length || 0) < 3) {
+        const ok = confirm('단어가 3개 미만입니다. 정말 서버 JSON을 덮어쓸까요?');
+        if (!ok) return;
+      }
       const payload = { data: dedupeListKeepFirst(vocab), message: `Update from UI ${new Date().toISOString()}` };
       const r = await fetch(API_PUBLISH, {
-        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload)
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload),
+        cache: 'no-store'
       });
-      const j = await r.json();
-      if (!r.ok) throw new Error(j?.message || j?.error || r.status);
-      alert('서버 반영 완료! commit: ' + (j.commit || 'ok'));
+      const text = await r.text();
+      let j; try { j = JSON.parse(text); } catch {}
+      if (!r.ok) throw new Error(`${r.status} ${r.statusText} — ${j?.message || text}`);
+      alert('서버 반영 완료! commit: ' + (j?.commit || 'ok'));
     } catch (e) {
       alert('업로드 실패: ' + e.message);
     } finally {
@@ -270,31 +287,28 @@
     }
   };
 
-  // ====== 전체 초기화 ======
+  // ====== 전체 초기화(이 기기만) ======
   el('resetAll').onclick = () => {
     if (!confirm('모든 단어를 삭제할까요? (이 기기 LocalStorage만 초기화)')) return;
     vocab = []; saveVocab(vocab); updateList(); setQuestion(null);
   };
 
-  // ====== 초기화 (단 한 번) ======
+  // ====== 초기화: 로컬 → 없으면 서버 시드(최초 1회), 그리고 렌더 ======
   async function init() {
-    // 1) LocalStorage 읽기
     vocab = loadVocab();
-
-    // 2) 비어 있으면 서버 JSON으로 시드(최초 한 번)
     if (!vocab || vocab.length === 0) {
       try {
-        const res = await fetch('vocab_list.json?ts=' + Date.now());
-        let data = await res.json();
-        vocab = dedupeListKeepFirst(data);
-        saveVocab(vocab);
+        const res = await fetch('vocab_list.json?ts=' + Date.now(), { cache: 'no-store' });
+        if (res.ok) {
+          let data = await res.json();
+          vocab = dedupeListKeepFirst(data);
+          saveVocab(vocab);
+        }
       } catch (e) {
         console.warn('초기 시드 실패:', e);
         vocab = [];
       }
     }
-
-    // 3) 단 한 번만 렌더
     updateList(); renderStats(); setQuestion(pickRandom());
   }
 
